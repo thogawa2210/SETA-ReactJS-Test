@@ -13,9 +13,11 @@ import {
 } from "@mui/material";
 import {useEffect, useState} from "react";
 import axios from "axios";
+import {setBlogList} from "./redux/features/blogSlice"
+import {useDispatch} from "react-redux";
+import {useSelector} from "react-redux";
 
 function App() {
-    const [postList, setPostList] = useState([]);
     const [openDialogAdd, setOpenDialogAdd] = useState(false);
     const [openDetailDialog, setOpenDetailDialog] = useState(false);
     const [openBackDrop, setOpenBackDrop] = useState(true);
@@ -29,6 +31,9 @@ function App() {
         title: '',
         body: ''
     });
+    const dispatch = useDispatch();
+    const blogList = useSelector(state => state.blogs.blogList)
+
 
     const handleOpenDialog = () => {
         setOpenDialogAdd(true);
@@ -41,7 +46,7 @@ function App() {
     }
 
     const showDetailPost = (id) => {
-        const detailPost = postList.filter(post => post.id === id);
+        const detailPost = blogList.filter(post => post.id === id);
         setDetailPost(detailPost[0]);
         setOpenDetailDialog(true);
     }
@@ -56,7 +61,7 @@ function App() {
 
     useEffect(() => {
         getPostAPI().then(res => {
-            setPostList(res.data);
+            dispatch(setBlogList([...res.data]))
             setOpenBackDrop(false);
         }).catch(err => console.log(err));
     }, [])
@@ -81,7 +86,7 @@ function App() {
                 </Grid>
             </Grid>
             <Grid container spacing={3}>
-                {postList.map((post) => (
+                {blogList.map((post) => (
                     <Grid item xs={3} key={post.id}>
                         <Card sx={{minWidth: 275}}>
                             <CardContent>
